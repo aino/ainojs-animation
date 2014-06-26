@@ -1,13 +1,23 @@
-Finger
+Animate
 ------
 
-Swipe/flick physics for touch devices. Usage:
+Simple tool for animating from one value to another using requestframe
 
-    Finger(element, options)
+Usage:
+
+    var animation = Animate(elem, options)
 
 Options:
 
-- start (0) - starting point
-- duration (340) - animation duration in ms
-- onchange (function) - callback when a new page is detected
-- oncomplete (function) - callback when the animation is complete
+- from (0) - start value
+- to (0) - to value
+- threshold (1) - margin for when the animation can safely stop
+- easing (function) - easing function (use ainojs-easing)
+- step (function) - callback for each frame, arguments: value, factor (0-1)
+- complete (function) - callback for when animation is complete
+- duration (400) - duration in ms
+
+Api:
+
+- stop() - stops the animation
+- stop(true) - stops the animation and finnish immediately
