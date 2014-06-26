@@ -17,5 +17,7 @@
   },
   "author": "Aino",
   "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "ainojs-requestframe": "latest"
+  }
 }

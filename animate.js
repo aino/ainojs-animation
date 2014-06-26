@@ -1,15 +1,5 @@
 
-var requestFrame = (function(){
-  var r = 'RequestAnimationFrame'
-  return window.requestAnimationFrame || 
-    window['webkit'+r] || 
-    window['moz'+r] || 
-    window['o'+r] || 
-    window['ms'+r] || 
-    function( callback ) {
-      window.setTimeout(callback, 1000 / 60)
-    }
-}())
+var requestFrame = require('ainojs-requestframe')
 
 module.exports = function(options) {
 
