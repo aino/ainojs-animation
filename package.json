@@ -1,0 +1,24 @@
+{
+  "name": "ainojs-finger",
+  "version": "1.0.0",
+  "description": "Swipe/flick physics for touch devices",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aino/ainojs-finger"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ainojs-detect": "^1.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/aino/ainojs-finger/issues"
+  },
+  "homepage": "https://github.com/aino/ainojs-finger",
+  "main": "finger.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aino",
+  "devDependencies": {
+  }
+}
