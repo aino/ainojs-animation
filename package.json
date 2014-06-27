@@ -1,0 +1,23 @@
+{
+  "name": "ainojs-animate",
+  "version": "1.0.5",
+  "description": "Animate values using requestframe",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aino/ainojs-animate"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aino/ainojs-animate/issues"
+  },
+  "homepage": "https://github.com/aino/ainojs-animate",
+  "main": "animate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aino",
+  "devDependencies": {},
+  "dependencies": {
+    "ainojs-requestframe": "latest"
+  }
+}
