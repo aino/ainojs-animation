@@ -33,6 +33,7 @@ module.exports = function(options) {
       this.start = this.start || +new Date()
 
       var elapsed = +new Date() - this.start
+      
       if ( elapsed > options.duration || Math.abs( distance ) <= options.threshold )
         return this.stop( true )
 
