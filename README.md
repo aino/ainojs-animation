@@ -1,23 +1,39 @@
-Animate
-------
+Animation
+----------
 
 Simple tool for animating from one value to another using requestframe
 
 Usage:
 
-    var animation = Animate(elem, options)
+    var animation = new Animation(options)
+
+Methods:
+  
+    animation.start()
+    animation.stop() // pauses the animation. Use .start() again to continue
+    animation.end() // stops and force completes the animation
+
+Animation implemenets the ainojs-events interface. Example:
+  
+    // callback for each frame:
+    animation.on('frame', function(e) {
+      console.log(e.value) // animation value
+      console.log(e.factor) // decimal value from 0-1
+    })
+
+    // callback for animation complete:
+    animation.on('complete', function() {
+      // animation is complete
+    })
+
+Events:
+
+- frame - triggers every frame. Event object: *value* and *factor*
+- complete - triggers when animation is complete.
 
 Options:
 
 - from (0) - start value
-- to (0) - to value
-- threshold (1) - margin for when the animation can safely stop
+- to (1) - end value
 - easing (function) - easing function (use ainojs-easing)
-- step (function) - callback for each frame, arguments: value, factor (0-1)
-- complete (function) - callback for when animation is complete
 - duration (400) - duration in ms
-
-Api:
-
-- stop() - stops the animation
-- stop(true) - stops the animation and finnish immediately
