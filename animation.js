@@ -36,9 +36,7 @@ Animation.prototype.animateTo = function(to) {
 
   this.from = this.value
   this.to = to
-
   this.distance = to - this.from
-
   this.isRunning = true
   this.timer = now()
   this.elapsed = 0
