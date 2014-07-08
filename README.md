@@ -9,11 +9,12 @@ Usage:
 
 Methods:
   
-    animation.start()       // starts/resumes the animation
-    animation.stop()        // pauses the animation. Use .start() again to continue
-    animation.end()         // stops and force completes the animation
-    animation.updateTo()    // updates the destination while animating
-    animation.isAnimating() // returns true/false if the animation is running
+    animation.animateTo(value) // starts the animation based on current value or initialValue
+    animation.pause()          // pauses the animation
+    animation.resume()         // resumes the animation after pause
+    animation.end()            // stops and force completes the animation
+    animation.updateTo(value)  // updates the destination while animating (within the same timeline)
+    animation.isAnimating()    // returns true/false if the animation is running
 
 Animation implemenets the ainojs-events interface. Example:
   
@@ -35,7 +36,6 @@ Events:
 
 Options:
 
-- from (0) - start value
-- to (1) - end value
+- initialValue (0) - initial starting value for the animation value
 - easing (function) - easing function (use ainojs-easing)
 - duration (400) - duration in ms
