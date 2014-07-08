@@ -9,9 +9,11 @@ Usage:
 
 Methods:
   
-    animation.start()
-    animation.stop() // pauses the animation. Use .start() again to continue
-    animation.end() // stops and force completes the animation
+    animation.start()       // starts/resumes the animation
+    animation.stop()        // pauses the animation. Use .start() again to continue
+    animation.end()         // stops and force completes the animation
+    animation.updateTo()    // updates the destination while animating
+    animation.isAnimating() // returns true/false if the animation is running
 
 Animation implemenets the ainojs-events interface. Example:
   
