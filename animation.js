@@ -27,15 +27,17 @@ var Animation = function(options) {
     this.config[i] = options[i]
 
   this.animations = {}
-
   this.timer = 0
   this.elapsed = 0
   this.duration = this.config.duration
+  return this
 }
 
-EventMixin.call(Animation.prototype)
+var proto = Animation.prototype
 
-Animation.prototype.init = function(initialValues) {
+EventMixin.call(proto)
+
+proto.init = function(initialValues) {
   for (var i in initialValues) {
     if ( typeof this.animations[i] != 'object' )
       this.animations[i] = { value: initialValues[i] }
@@ -47,14 +49,14 @@ Animation.prototype.init = function(initialValues) {
   return this
 }
 
-Animation.prototype.getValues = function() {
+proto.getValues = function() {
   var values = {}
   for ( var i in this.animations )
     values[i] = this.animations[i].value
   return values
 }
 
-Animation.prototype.animateTo = function(destinationValues) {
+proto.animateTo = function(destinationValues) {
 
   if ( typeof destinationValues == 'undefined' )
     throw 'No destination values'
@@ -75,7 +77,7 @@ Animation.prototype.animateTo = function(destinationValues) {
   return this
 }
 
-Animation.prototype.tick = function() {
+proto.tick = function() {
 
   if ( !this.isRunning )
     return
@@ -108,27 +110,27 @@ Animation.prototype.tick = function() {
   return this
 }
 
-Animation.prototype.isAnimating = function() {
+proto.isAnimating = function() {
   return !!this.isRunning
 }
 
-Animation.prototype.pause = function() {
+proto.pause = function() {
   this.isRunning = false
   return this
 }
 
-Animation.prototype.resume = function() {
+proto.resume = function() {
   this.isRunning = true
   this.timer = now()
   return this.tick()
 }
 
-Animation.prototype.updateTo = function(destinationValues) {
+proto.updateTo = function(destinationValues) {
   this.duration -= this.elapsed
   return this.animateTo(destinationValues)
 }
 
-Animation.prototype.end = function() {
+proto.end = function() {
   this.trigger('frame', {
     values: this.getValues()
   })
