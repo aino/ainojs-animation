@@ -13,7 +13,7 @@ Using npm:
 In the browser:
 
 - Download a release at https://github.com/aino/ainojs-animation/releases
-- Include the compiled file: ``<script src="ainojs-ainmation/dist/ainojs-animation.min.js"></script>``
+- Include the compiled file: ``<script src="ainojs-animation/dist/ainojs-animation.min.js"></script>``
 
 Usage example:
 --------------
