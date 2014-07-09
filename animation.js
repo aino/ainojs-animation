@@ -2,8 +2,14 @@
 var requestFrame = require('ainojs-requestframe')
 var EventMixin = require('ainojs-events')
 
+// util for current timestamp
 var now = function() {
   return +new Date()
+}
+
+// util for checking threshold
+var checkDistance = function(anim) {
+  return Math.abs( anim.to-anim.value ) <= Math.min( 1, Math.abs(anim.to-anim.from)/1000 )
 }
 
 var Animation = function(options) {
@@ -11,7 +17,6 @@ var Animation = function(options) {
   options = options || {}
 
   this.config = {
-    initialValue: 0,
     easing: function(x,t,b,c,d) {
       return -c * ((t=t/d-1)*t*t*t - 1) + b // easeOutQuart
     },
@@ -21,7 +26,8 @@ var Animation = function(options) {
   for (var i in options)
     this.config[i] = options[i]
 
-  this.from = this.value = this.config.initialValue
+  this.animations = {}
+
   this.timer = 0
   this.elapsed = 0
   this.duration = this.config.duration
@@ -29,14 +35,39 @@ var Animation = function(options) {
 
 EventMixin.call(Animation.prototype)
 
-Animation.prototype.animateTo = function(to) {
+Animation.prototype.init = function(initialValues) {
+  for (var i in initialValues) {
+    if ( typeof this.animations[i] != 'object' )
+      this.animations[i] = { value: initialValues[i] }
+  }
+  this.trigger('frame', {
+    values: this.getValues()
+  })
+  this.isRunning = false
+  return this
+}
 
-  if ( this.isRunning && typeof to == 'undefined' )
-    return
+Animation.prototype.getValues = function() {
+  var values = {}
+  for ( var i in this.animations )
+    values[i] = this.animations[i].value
+  return values
+}
 
-  this.from = this.value
-  this.to = to
-  this.distance = to - this.from
+Animation.prototype.animateTo = function(destinationValues) {
+
+  if ( typeof destinationValues == 'undefined' )
+    throw 'No destination values'
+
+  for (var i in destinationValues) {
+    var a = this.animations[i]
+    if ( typeof a == 'undefined')
+      throw 'Animation "'+i+'" has not been initialized. Use animation.init() to set default values'
+    a.from = a.value
+    a.to = destinationValues[i]
+    a.distance = a.to - a.value
+  }
+
   this.isRunning = true
   this.timer = now()
   this.elapsed = 0
@@ -52,16 +83,24 @@ Animation.prototype.tick = function() {
   this.elapsed += now() - this.timer
   this.timer = now()
 
-  var noDistance = Math.abs( this.to-this.value ) <= Math.min( 1, Math.abs(this.to-this.from)/1000 )
+  var noDistance = false
+  for (var i in this.animations) {
+    if ( checkDistance(this.animations[i]) ) {
+      noDistance = true
+      break
+    }
+  }
 
   if ( this.elapsed > this.duration || noDistance )
     return this.end()
 
-  this.value = this.config.easing(null, this.elapsed, this.from, this.distance, this.duration)
+  for ( var i in this.animations ) {
+    var a = this.animations[i]
+    a.value = this.config.easing(null, this.elapsed, a.from, a.distance, this.duration)
+  }
 
   this.trigger('frame', {
-    value: this.value,
-    factor: (this.value-this.from)/this.distance
+    values: this.getValues()
   })
 
   requestFrame(this.tick.bind(this))
@@ -84,15 +123,14 @@ Animation.prototype.resume = function() {
   return this.tick()
 }
 
-Animation.prototype.updateTo = function(to) {
+Animation.prototype.updateTo = function(destinationValues) {
   this.duration -= this.elapsed
-  return this.animateTo(to)
+  return this.animateTo(destinationValues)
 }
 
 Animation.prototype.end = function() {
   this.trigger('frame', {
-    value: this.to,
-    factor: 1
+    values: this.getValues()
   })
   this.trigger('complete')
   this.isRunning = false
