@@ -1,6 +1,6 @@
 {
   "name": "ainojs-animation",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Animate values using requestframe",
   "repository": {
     "type": "git",
