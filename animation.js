@@ -27,6 +27,7 @@ var Animation = function(options) {
     this.config[i] = options[i]
 
   this.animations = {}
+  this.obj = {}
   this.timer = 0
   this.elapsed = 0
   this.duration = this.config.duration
@@ -42,18 +43,12 @@ proto.init = function(initialValues) {
     if ( typeof this.animations[i] != 'object' )
       this.animations[i] = { value: initialValues[i] }
   }
+  this.obj = initialValues
   this.trigger('frame', {
-    values: this.getValues()
+    values: initialValues
   })
   this.isRunning = false
   return this
-}
-
-proto.getValues = function() {
-  var values = {}
-  for ( var i in this.animations )
-    values[i] = this.animations[i].value
-  return values
 }
 
 proto.animateTo = function(destinationValues) {
@@ -99,10 +94,11 @@ proto.tick = function() {
   for ( var i in this.animations ) {
     var a = this.animations[i]
     a.value = this.config.easing(null, this.elapsed, a.from, a.distance, this.duration)
+    this.obj[i] = a.value
   }
 
   this.trigger('frame', {
-    values: this.getValues()
+    values: this.obj
   })
 
   requestFrame(this.tick.bind(this))
@@ -127,12 +123,14 @@ proto.resume = function() {
 
 proto.updateTo = function(destinationValues) {
   this.duration -= this.elapsed
-  return this.animateTo(destinationValues)
+  if ( this.duraton > 0 )
+    this.animateTo(destinationValues)
+  return this
 }
 
 proto.end = function() {
   this.trigger('frame', {
-    values: this.getValues()
+    values: this.obj//this.getValues()
   })
   this.trigger('complete')
   this.isRunning = false

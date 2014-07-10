@@ -1,7 +1,7 @@
 Animation
 =========
 
-Microtool for multiple animation values using requestAnimationFrame. This does not do any parsing or modification of DOM nodes or styles, it simply animates values.
+Microtool for animating multiple values using requestAnimationFrame. This does not do any parsing or modification of DOM nodes or styles, it simply animates values.
 
 Installation:
 -------------
@@ -93,7 +93,6 @@ Methods:
     animation.resume()               // resumes the animation after pause
     animation.end()                  // stops and force completes the animation
     animation.updateTo(newValues)    // updates the destinations while animating (within the same timeline)
-    animation.getValues()            // retrieves the current values of the animation
     animation.isAnimating()          // returns true/false if the animation is running
 
 Animation implemenets the ainojs-events interface. Example:
@@ -108,10 +107,20 @@ Animation implemenets the ainojs-events interface. Example:
       // animation is complete
     })
 
+The object passed into ``animation.init()`` will be mutated in the animation. 
+You can use that to retrieve the values in another callback, F.ex:
+
+    var obj = { left: 0 }
+    var animation = new Animation()
+    animation.init(obj).animateTo({ left:100 })
+    setTimeout(function() {
+      console.log(obj)
+    },100)
+
 Events:
 -------
 
-- frame - triggers every frame. Event object: *value* and *factor*
+- frame - triggers every frame. Event properties: *values*
 - complete - triggers when animation is complete.
 
 Options:
