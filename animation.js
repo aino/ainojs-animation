@@ -130,7 +130,7 @@ proto.updateTo = function(destinationValues) {
 
 proto.end = function() {
   this.trigger('frame', {
-    values: this.obj//this.getValues()
+    values: this.obj
   })
   this.trigger('complete')
   this.isRunning = false
