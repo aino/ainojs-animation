@@ -9,7 +9,7 @@ var now = function() {
 
 // util for checking threshold
 var checkDistance = function(anim) {
-  return Math.abs( anim.to-anim.value ) <= Math.min( 1, Math.abs(anim.to-anim.from)/1000 )
+  return Math.abs( anim.to-anim.value ) <= Math.min( 1, Math.abs(anim.to-anim.from)/10000 )
 }
 
 var Animation = function(options) {
@@ -143,8 +143,12 @@ proto.updateTo = function(destinationValues) {
 }
 
 proto.end = function() {
+  var end = {}
+  this.eachAnims(function(a, i) {
+    end[i] = a.value
+  })
   this.trigger('frame', {
-    values: this.obj
+    values: end
   })
   this.trigger('complete')
   this.isRunning = false
@@ -156,9 +160,7 @@ proto.end = function() {
     })
     this.animateTo(start)
   } else if ( this.config.repeat ) {
-    var end = {}
     this.eachAnims(function(a, i) {
-      end[i] = a.value
       this.obj[i] = a.value = a.from
     })
     this.animateTo(end)
