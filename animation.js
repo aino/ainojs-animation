@@ -20,7 +20,9 @@ var Animation = function(options) {
     easing: function(x,t,b,c,d) {
       return -c * ((t=t/d-1)*t*t*t - 1) + b // easeOutQuart
     },
-    duration: 400
+    duration: 400,
+    delay: 0,
+    loop: false
   }
 
   for (var i in options)
@@ -38,6 +40,11 @@ var proto = Animation.prototype
 
 EventMixin.call(proto)
 
+proto.eachAnims = function(fn) {
+  for( var i in this.animations )
+    fn.call(this, this.animations[i], i)
+},
+
 proto.init = function(initialValues) {
   for (var i in initialValues) {
     if ( typeof this.animations[i] != 'object' )
@@ -51,7 +58,15 @@ proto.init = function(initialValues) {
   return this
 }
 
-proto.animateTo = function(destinationValues) {
+proto.animateTo = function(destinationValues, skipDelay) {
+
+  if ( this.config.delay && !skipDelay && !this.isRunning ) {
+    var args = [].slice.call(arguments).concat([true])
+    setTimeout(function() {
+      this.animateTo.apply(this, args)
+    }.bind(this), this.config.delay)
+    return
+  }
 
   if ( typeof destinationValues == 'undefined' )
     throw 'No destination values'
@@ -91,11 +106,10 @@ proto.tick = function() {
   if ( this.elapsed > this.duration || noDistance )
     return this.end()
 
-  for ( var i in this.animations ) {
-    var a = this.animations[i]
+  this.eachAnims(function(a, i) {
     a.value = this.config.easing(null, this.elapsed, a.from, a.distance, this.duration)
     this.obj[i] = a.value
-  }
+  })
 
   this.trigger('frame', {
     values: this.obj
@@ -135,6 +149,22 @@ proto.end = function() {
   this.trigger('complete')
   this.isRunning = false
   this.duration = this.config.duration
+  if ( this.config.yoyo ) {
+    var start = {}
+    this.eachAnims(function(a, i) {
+      start[i] = a.from
+    })
+    this.animateTo(start)
+  } else if ( this.config.loop ) {
+    var end = {}
+    this.eachAnims(function(a, i) {
+      end[i] = a.value
+      this.obj[i] = a.value = a.from
+    })
+    this.animateTo(end)
+  } else
+    this.animations = {}
+
   return this
 }
 
