@@ -145,7 +145,7 @@ proto.updateTo = function(destinationValues) {
 proto.end = function() {
   var end = {}
   this.eachAnims(function(a, i) {
-    end[i] = a.value
+    end[i] = a.to
   })
   this.trigger('frame', {
     values: end
