@@ -22,7 +22,7 @@ var Animation = function(options) {
     },
     duration: 400,
     delay: 0,
-    loop: false
+    repeat: false
   }
 
   for (var i in options)
@@ -155,7 +155,7 @@ proto.end = function() {
       start[i] = a.from
     })
     this.animateTo(start)
-  } else if ( this.config.loop ) {
+  } else if ( this.config.repeat ) {
     var end = {}
     this.eachAnims(function(a, i) {
       end[i] = a.value

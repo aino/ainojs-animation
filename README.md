@@ -128,3 +128,6 @@ Options:
 
 - easing (function) - easing function (use ainojs-easing)
 - duration (400) - duration in ms
+- repeat (false) - repeats the animation in a loop
+- yoyo (false) - loops the animation back & forth
+- delay (0) - ms of delay before the animation starts. If it is looped, the delay will be applied on each loop.
