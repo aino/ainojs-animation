@@ -17,33 +17,32 @@ var tickers = []
 var tick = function() {
   var willTick = false
   var n = now()
-  tickers.forEach(function(anim) {
-
-    if ( anim.isRunning )
-      willTick = true
-
-    anim.elapsed += n - anim.timer
-    anim.timer = now()
-
-    var noDistance = false
-    for (var i in anim.animations) {
-      if ( checkDistance(anim.animations[i]) ) {
-        noDistance = true
-        break
-      }
+  tickers.forEach(function(anim, i) {
+    if ( anim.kill ) {
+      //tickers.splice(i, 1)
+      //return
     }
-
-    if ( anim.elapsed > anim.duration || noDistance )
-      return anim.end()
-
-    anim.eachAnims(function(a, i) {
-      a.value = anim.config.easing(null, anim.elapsed, a.from, a.distance, anim.duration)
-      anim.obj[i] = a.value
-    })
-
-    anim.trigger('frame', {
-      values: anim.obj
-    })
+    if ( anim.isRunning ) {
+      willTick = true
+      anim.elapsed += n - anim.timer
+      anim.timer = n
+      var noDistance = false
+      for (var i in anim.animations) {
+        if ( checkDistance(anim.animations[i]) ) {
+          noDistance = true
+          break
+        }
+      }
+      if ( anim.elapsed > anim.duration || noDistance )
+        return anim.end()
+      anim.eachAnims(function(a, i) {
+        a.value = anim.config.easing(null, anim.elapsed, a.from, a.distance, anim.duration)
+        anim.obj[i] = a.value
+      })
+      anim.trigger('frame', {
+        values: anim.obj
+      })
+    }
   })
   if ( willTick )
     requestFrame(tick)
@@ -70,6 +69,7 @@ var Animation = function(options) {
   this.timer = 0
   this.elapsed = 0
   this.duration = this.config.duration
+  this.kill = false
   return this
 }
 
@@ -204,7 +204,7 @@ proto.end = function() {
     })
     this.animateTo(end)
   } else {
-    // kill
+    this.kill = true
   }
 
   return this
