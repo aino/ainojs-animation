@@ -7,45 +7,39 @@ var now = function() {
   return +new Date()
 }
 
-// util for checking threshold
-var checkDistance = function(anim) {
-  return Math.abs( anim.to-anim.value ) <= Math.min( 1, Math.abs(anim.to-anim.from)/10000 )
-}
-
 // collect animations
+var isSleeping = true
+var sleep = function() {
+  isSleeping = true
+}
 var tickers = []
 var tick = function() {
   var willTick = false
   var n = now()
   tickers.forEach(function(anim, i) {
-    if ( anim.kill ) {
-      //tickers.splice(i, 1)
-      //return
-    }
     if ( anim.isRunning ) {
       willTick = true
       anim.elapsed += n - anim.timer
       anim.timer = n
-      var noDistance = false
-      for (var i in anim.animations) {
-        if ( checkDistance(anim.animations[i]) ) {
-          noDistance = true
-          break
-        }
-      }
-      if ( anim.elapsed > anim.duration || noDistance )
+      if ( anim.elapsed > anim.duration )
         return anim.end()
       anim.eachAnims(function(a, i) {
-        a.value = anim.config.easing(null, anim.elapsed, a.from, a.distance, anim.duration)
-        anim.obj[i] = a.value
+        a.value = anim.obj[i] = anim.config.easing(null, anim.elapsed, a.from, a.distance, anim.duration)
       })
       anim.trigger('frame', {
         values: anim.obj
       })
     }
   })
-  if ( willTick )
+  if( willTick ) {
+    isSleeping = false
     requestFrame(tick)
+  } else 
+    sleep()
+}
+
+var wake = function() {
+  isSleeping && tick()
 }
 
 var Animation = function(options) {
@@ -63,6 +57,8 @@ var Animation = function(options) {
 
   for (var i in options)
     this.config[i] = options[i]
+
+  this.uid = Math.round(Math.random()*Math.pow(9,9))
 
   this.animations = {}
   this.obj = {}
@@ -121,40 +117,7 @@ proto.animateTo = function(destinationValues, skipDelay) {
   this.isRunning = true
   this.timer = now()
   this.elapsed = 0
-  tick()
-  return this
-}
-
-proto.tick = function() {
-
-  if ( !this.isRunning )
-    return
-
-  this.elapsed += now() - this.timer
-  this.timer = now()
-
-  var noDistance = false
-  for (var i in this.animations) {
-    if ( checkDistance(this.animations[i]) ) {
-      noDistance = true
-      break
-    }
-  }
-
-  if ( this.elapsed > this.duration || noDistance )
-    return this.end()
-
-  this.eachAnims(function(a, i) {
-    a.value = this.config.easing(null, this.elapsed, a.from, a.distance, this.duration)
-    this.obj[i] = a.value
-  })
-
-  this.trigger('frame', {
-    values: this.obj
-  })
-
-  requestFrame(this.tick.bind(this))
-
+  wake()
   return this
 }
 
@@ -170,13 +133,13 @@ proto.pause = function() {
 proto.resume = function() {
   this.isRunning = true
   this.timer = now()
-  tick()
+  wake()
   return this
 }
 
 proto.updateTo = function(destinationValues) {
   this.duration -= this.elapsed
-  if ( this.duraton > 0 )
+  if ( this.duration > 0 )
     this.animateTo(destinationValues)
   return this
 }
@@ -203,11 +166,23 @@ proto.end = function() {
       this.obj[i] = a.value = a.from
     })
     this.animateTo(end)
-  } else {
-    this.kill = true
   }
 
   return this
+}
+
+proto.destroy = function() {
+  this.isRunning = false
+  tickers.forEach(function(tick, i) {
+    if ( this.uid === tick.uid )
+      tickers.splice(i, 1)
+  }.bind(this))
+}
+
+// static utils
+
+Animation.cleanUp = function() {
+  tickers = []
 }
 
 module.exports = Animation

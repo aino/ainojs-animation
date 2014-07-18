@@ -94,6 +94,12 @@ Methods:
     animation.end()                  // stops and force completes the animation
     animation.updateTo(newValues)    // updates the destinations while animating (within the same timeline)
     animation.isAnimating()          // returns true/false if the animation is running
+    animation.destroy()              // kill animation and clear memory
+
+Static Methods:
+---------------
+
+    Animation.cleanUp()  // destroys all animations and clears memory
 
 Animation implemenets the ainojs-events interface. Example:
   
