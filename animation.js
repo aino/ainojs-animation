@@ -12,6 +12,43 @@ var checkDistance = function(anim) {
   return Math.abs( anim.to-anim.value ) <= Math.min( 1, Math.abs(anim.to-anim.from)/10000 )
 }
 
+// collect animations
+var tickers = []
+var tick = function() {
+  var willTick = false
+  var n = now()
+  tickers.forEach(function(anim) {
+
+    if ( anim.isRunning )
+      willTick = true
+
+    anim.elapsed += n - anim.timer
+    anim.timer = now()
+
+    var noDistance = false
+    for (var i in anim.animations) {
+      if ( checkDistance(anim.animations[i]) ) {
+        noDistance = true
+        break
+      }
+    }
+
+    if ( anim.elapsed > anim.duration || noDistance )
+      return anim.end()
+
+    anim.eachAnims(function(a, i) {
+      a.value = anim.config.easing(null, anim.elapsed, a.from, a.distance, anim.duration)
+      anim.obj[i] = a.value
+    })
+
+    anim.trigger('frame', {
+      values: anim.obj
+    })
+  })
+  if ( willTick )
+    requestFrame(tick)
+}
+
 var Animation = function(options) {
 
   options = options || {}
@@ -55,6 +92,7 @@ proto.init = function(initialValues) {
     values: initialValues
   })
   this.isRunning = false
+  tickers.push(this)
   return this
 }
 
@@ -83,7 +121,7 @@ proto.animateTo = function(destinationValues, skipDelay) {
   this.isRunning = true
   this.timer = now()
   this.elapsed = 0
-  this.tick()
+  tick()
   return this
 }
 
@@ -132,7 +170,8 @@ proto.pause = function() {
 proto.resume = function() {
   this.isRunning = true
   this.timer = now()
-  return this.tick()
+  tick()
+  return this
 }
 
 proto.updateTo = function(destinationValues) {
@@ -164,8 +203,9 @@ proto.end = function() {
       this.obj[i] = a.value = a.from
     })
     this.animateTo(end)
-  } else
-    this.animations = {}
+  } else {
+    // kill
+  }
 
   return this
 }
