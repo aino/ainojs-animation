@@ -52,7 +52,8 @@ var Animation = function(options) {
     },
     duration: 400,
     delay: 0,
-    repeat: false
+    repeat: false,
+    yoyo: false
   }
 
   for (var i in options)
