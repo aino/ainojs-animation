@@ -67,12 +67,13 @@ var Animation = function(options) {
   this.elapsed = 0
   this.duration = this.config.duration
   this.kill = false
+
+  EventMixin.call(this)
+
   return this
 }
 
 var proto = Animation.prototype
-
-EventMixin.call(proto)
 
 proto.eachAnims = function(fn) {
   for( var i in this.animations )
