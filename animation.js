@@ -68,6 +68,7 @@ var Animation = function(options) {
   this.duration = this.config.duration
   this.kill = false
 
+  // events interface mixin
   EventMixin.call(this)
 
   return this
