@@ -66,7 +66,6 @@ var Animation = function(options) {
   this.timer = 0
   this.elapsed = 0
   this.duration = this.config.duration
-  this.kill = false
 
   // events interface mixin
   EventMixin.call(this)
