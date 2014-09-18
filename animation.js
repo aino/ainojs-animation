@@ -77,6 +77,8 @@ var proto = Animation.prototype
 proto.setOptions = function(options) {
   for (var i in options)
     this.config[i] = options[i]
+  if ( options.duration && !this.isRunning )
+    this.duration = options.duration
 }
 
 proto.eachAnims = function(fn) {
