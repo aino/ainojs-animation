@@ -105,12 +105,16 @@ proto.setValues = function(newValues) {
   for (var i in newValues) {
     var a = this.animations[i]
     if ( typeof a != 'undefined') {
-      a.from = a.to = newValues[i]
+      this.obj[i] = a.value = a.from = a.to = newValues[i]
       a.distance = 0
     }
   }
   if ( this.isRunning )
     this.end()
+  else
+    this.trigger('frame', {
+      values: this.obj
+    })
 }
 
 proto.animateTo = function(destinationValues, skipDelay) {
