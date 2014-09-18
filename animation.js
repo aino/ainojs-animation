@@ -55,8 +55,7 @@ var Animation = function(options) {
     yoyo: false
   }
 
-  for (var i in options)
-    this.config[i] = options[i]
+  this.setOptions(options)
 
   this.uid = Math.round(Math.random()*Math.pow(9,9))
 
@@ -65,6 +64,7 @@ var Animation = function(options) {
   this.timer = 0
   this.elapsed = 0
   this.duration = this.config.duration
+  this.intialized = false
 
   // events interface mixin
   EventMixin.call(this)
@@ -74,12 +74,20 @@ var Animation = function(options) {
 
 var proto = Animation.prototype
 
+proto.setOptions = function(options) {
+  for (var i in options)
+    this.config[i] = options[i]
+}
+
 proto.eachAnims = function(fn) {
   for( var i in this.animations )
     fn.call(this, this.animations[i], i)
 },
 
 proto.init = function(initialValues) {
+  if ( this.intialized )
+    return
+  this.intialized = true
   for (var i in initialValues) {
     if ( typeof this.animations[i] != 'object' )
       this.animations[i] = { value: initialValues[i] }
@@ -91,6 +99,18 @@ proto.init = function(initialValues) {
   this.isRunning = false
   tickers.push(this)
   return this
+}
+
+proto.setValues = function(newValues) {
+  for (var i in newValues) {
+    var a = this.animations[i]
+    if ( typeof a != 'undefined') {
+      a.from = a.to = newValues[i]
+      a.distance = 0
+    }
+  }
+  if ( this.isRunning )
+    this.end()
 }
 
 proto.animateTo = function(destinationValues, skipDelay) {
