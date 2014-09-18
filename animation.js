@@ -101,7 +101,7 @@ proto.init = function(initialValues) {
   return this
 }
 
-proto.setValues = function(newValues) {
+proto.moveTo = function(newValues) {
   for (var i in newValues) {
     var a = this.animations[i]
     if ( typeof a != 'undefined') {
@@ -109,12 +109,14 @@ proto.setValues = function(newValues) {
       a.distance = 0
     }
   }
-  if ( this.isRunning )
-    this.end()
-  else
-    this.trigger('frame', {
-      values: this.obj
-    })
+  if ( this.isRunning ) {
+    this.trigger('complete')
+    this.isRunning = false
+    this.duration = this.config.duration
+  }
+  this.trigger('frame', {
+    values: this.obj
+  })
 }
 
 proto.animateTo = function(destinationValues, skipDelay) {

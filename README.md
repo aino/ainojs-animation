@@ -89,11 +89,11 @@ Methods:
     
     animation.init(initialValues)    // sets initial values
     animation.animateTo(values)      // starts the animation starting from current values
+    animation.updateTo(newValues)    // updates the destinations while animating (within the same timeline)
+    animation.moveTo()               // move the animation to new values without animation
     animation.pause()                // pauses the animation
     animation.resume()               // resumes the animation after pause
     animation.end()                  // stops and force completes the animation
-    animation.updateTo(newValues)    // updates the destinations while animating (within the same timeline)
-    animation.setValues()            // manually set new values and end the current animation
     animation.setOptions(options)    // set new options at run-time
     animation.isAnimating()          // returns true/false if the animation is running
     animation.destroy()              // kill animation and clear memory
