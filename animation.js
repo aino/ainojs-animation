@@ -37,6 +37,7 @@ var tick = function() {
   } else 
     sleep()
 }
+
 var wake = function() {
   isSleeping && tick()
 }
