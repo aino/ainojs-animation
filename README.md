@@ -15,8 +15,8 @@ In the browser:
 - Download a release at https://github.com/aino/ainojs-animation/releases
 - Include the compiled file: ``<script src="ainojs-animation/dist/ainojs-animation.min.js"></script>``
 
-Usage example:
---------------
+Rich usage example:
+-------------------
 
     var animation = new Animation({
       duration: 2000 // two seconds
@@ -38,6 +38,31 @@ Usage example:
       top: 200,
       left: 400
     })
+
+Chain methods:
+--------------
+
+    var animation = new Animation().on('frame', function(e) {
+      // do something on each fame
+    }).on('complete', function(e) {
+      // do something when animation is complete
+    }).init({ x: 0 }).animateTo({ x: 1 })
+
+Animation.simple():
+-------------------
+
+Use `Animation.simple()` to create a simple animation from one value to another:
+
+    Animation.simple(0, 1, {
+      duration: 300,
+      frame: function(val) {
+        console.log(val) // 
+      },
+      complete: function() {
+        console.log('finished')
+      }
+    })
+
 
 React usage example:
 --------------------
@@ -101,7 +126,8 @@ Methods:
 Static Methods:
 ---------------
 
-    Animation.cleanUp()  // destroys all animations and clears memory
+    Animation.cleanUp()                  // destroys all animations and clears memory
+    Animation.simple(from, to, options)  // creates a simple animation instance
 
 Animation implemenets the ainojs-events interface. Example:
   

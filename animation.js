@@ -2,16 +2,12 @@
 var requestFrame = require('ainojs-requestframe')
 var EventMixin = require('ainojs-events')
 
-// util for current timestamp
-var now = function() {
-  return +new Date()
-}
+var now = function() { return +new Date() }
+var noop = function() {}
 
 // collect animations
 var isSleeping = true
-var sleep = function() {
-  isSleeping = true
-}
+var sleep = function() { isSleeping = true }
 var tickers = []
 var tick = function() {
   var willTick = false
@@ -37,10 +33,9 @@ var tick = function() {
   } else 
     sleep()
 }
+var wake = function() { isSleeping && tick() }
 
-var wake = function() {
-  isSleeping && tick()
-}
+// constructor
 
 var Animation = function(options) {
 
@@ -213,6 +208,19 @@ proto.destroy = function() {
 
 Animation.cleanUp = function() {
   tickers = []
+}
+
+Animation.simple = function(from, to, options) {
+  return new Animation(options)
+    .init({val: from})
+    .on('frame', function(e) {
+      options.frame && options.frame.call(this, e.values.val)
+    })
+    .on('complete', function() {
+      options.complete && options.complete.apply(this, arguments)
+      this.destroy()
+    })
+    .animateTo({val: to})
 }
 
 module.exports = Animation
