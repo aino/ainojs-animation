@@ -1,4 +1,3 @@
-
 var requestFrame = require('ainojs-requestframe')
 var EventMixin = require('ainojs-events')
 
