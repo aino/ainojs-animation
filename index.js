@@ -1,4 +1,4 @@
-var requestFrame = require('ainojs-requestframe')
+var requestFrame = require('raf')
 var EventMixin = require('ainojs-events')
 
 var now = function() { return +new Date() }

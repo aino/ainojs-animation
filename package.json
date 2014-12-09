@@ -11,14 +11,14 @@
     "url": "https://github.com/aino/ainojs-animation/issues"
   },
   "homepage": "https://github.com/aino/ainojs-animation",
-  "main": "animation.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aino",
   "devDependencies": {},
   "dependencies": {
-    "ainojs-requestframe": "latest",
-    "ainojs-events": "latest"
+    "ainojs-events": "latest",
+    "raf": "^2.0.4"
   }
 }
