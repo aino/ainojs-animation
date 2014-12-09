@@ -101,6 +101,9 @@ React usage example:
           top: this.state.top,
           background: '#000'
         }
+
+        Animation.optimizeCSS(style)
+        
         return (
           <div style={style} />
         )
@@ -128,6 +131,7 @@ Static Methods:
 
     Animation.cleanUp()                  // destroys all animations and clears memory
     Animation.simple(from, to, options)  // creates a simple animation instance
+    Animation.optimizeCSS(styles)        // optimizes a style object with translate3d if supported
 
 Animation implemenets the ainojs-events interface. Example:
   

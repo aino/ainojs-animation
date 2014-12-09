@@ -5,6 +5,33 @@ var EventMixin = require('ainojs-events')
 var now = function() { return +new Date() }
 var noop = function() {}
 
+// detect prefix for CSS helper
+var prefix = (function() {
+  var el = document.createElement('i')
+  el.style.position = 'absolute'
+  var has3d
+  var transforms = {
+    'MozTransform':'-moz-transform',
+    'transform':'transform',
+    'webkitTransform':'-webkit-transform',
+    'msTransform':'-ms-transform',
+    'OTransform':'-o-transform'
+  }
+  document.body.appendChild(el, null)
+  for (var t in transforms) {
+    if ( typeof el.style[t] != 'undefined' ) {
+      el.style[t] = 'translate3d(1px,1px,1px)'
+      has3d = window.getComputedStyle(el).getPropertyValue(transforms[t])
+      if (has3d !== undefined && has3d.length > 0 && has3d !== "none") {
+        prefix = t
+        break
+      }
+    }
+  }
+  document.body.removeChild(el)
+  return prefix || null
+}())
+
 // collect animations
 var isSleeping = true
 var sleep = function() { isSleeping = true }
@@ -206,10 +233,12 @@ proto.destroy = function() {
 
 // static utils
 
+// clears all animations
 Animation.cleanUp = function() {
   tickers = []
 }
 
+// helper for simple animation
 Animation.simple = function(from, to, options) {
   return new Animation(options)
     .init({val: from})
@@ -221,6 +250,29 @@ Animation.simple = function(from, to, options) {
       this.destroy()
     })
     .animateTo({val: to})
+}
+
+// helper for creating optimized styles
+Animation.optimizeCSS = function(obj) {
+
+  if ( !prefix )
+    return
+
+  var x, y
+
+  if (obj.hasOwnProperty('top'))
+    y = parseFloat(obj.top)
+
+  if (obj.hasOwnProperty('left'))
+    x = parseFloat(obj.left)
+
+  if ( typeof x != 'number' || typeof y != 'number' )
+    return
+
+  obj[prefix] = 'translate3d('+x+'px,'+y+'px,0)'
+  delete obj.top
+  delete obj.left
+
 }
 
 module.exports = Animation
