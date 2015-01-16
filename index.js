@@ -6,7 +6,11 @@ var noop = function() {}
 var document = window.document
 
 // detect prefix for CSS helper
-var prefix = (function() {
+var getPrefix = function() {
+  if ( this.prefix )
+    return this.prefix
+  if ( !document.body )
+    return null
   var el = document.createElement('i')
   el.style.position = 'absolute'
   var has3d
@@ -23,14 +27,14 @@ var prefix = (function() {
       el.style[t] = 'translate3d(1px,1px,1px)'
       has3d = window.getComputedStyle(el).getPropertyValue(transforms[t])
       if (has3d !== undefined && has3d.length > 0 && has3d !== "none") {
-        prefix = t
+        this.prefix = t
         break
       }
     }
   }
   document.body.removeChild(el)
-  return prefix || null
-}())
+  return this.prefix || null
+}
 
 // collect animations
 var isSleeping = true
