@@ -259,9 +259,6 @@ Animation.simple = function(from, to, options) {
 // helper for creating optimized styles
 Animation.optimizeCSS = function(obj) {
 
-  if ( !prefix )
-    return
-
   var x, y
 
   if (obj.hasOwnProperty('top'))
@@ -273,7 +270,7 @@ Animation.optimizeCSS = function(obj) {
   if ( typeof x != 'number' || typeof y != 'number' )
     return
 
-  obj[prefix] = 'translate3d('+x+'px,'+y+'px,0)'
+  obj[getPrefix()] = 'translate3d('+x+'px,'+y+'px,0)'
   delete obj.top
   delete obj.left
 
