@@ -3,7 +3,6 @@ var EventMixin = require('ainojs-events')
 
 var now = function() { return +new Date() }
 var noop = function() {}
-var document = window.document
 
 // detect prefix for CSS helper
 var getPrefix = function() {
