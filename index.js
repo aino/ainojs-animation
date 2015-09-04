@@ -250,7 +250,7 @@ Animation.transform = function(node, transforms) {
   if ( !isNaN(opacity)  )
     node.style.opacity = transforms.opacity
   if ( Detect.transformPrefix ) {
-    if ( !isNaN(x) && !isNaN(y) )
+    if ( x || y )
       t.push(Detect.translate3d ? 'translate3d('+x+'px,'+y+'px,0)' : 'translate('+x+'px,'+y+'px)')
     if ( !isNaN(scale) )
       t.push(Detect.translate3d ? 'scale3d('+scale+','+scale+',1)' : 'scale('+scale+','+scale+')')
@@ -259,9 +259,11 @@ Animation.transform = function(node, transforms) {
 
     node.style[Detect.transformPrefix] = t.join(' ')
 
-  } else if ( !isNaN(x) && !isNaN(y) ) {
-    node.style.left = x+'px'
-    node.style.top = y+'px'
+  } else {
+    if ( transforms.hasOwnProperty('left') && !isNaN(x) )
+      node.style.left = x+'px'
+    if ( transforms.hasOwnProperty('top') && !isNaN(y) )
+      node.style.top = y+'px'
   }
 }
 
