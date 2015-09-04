@@ -25,8 +25,12 @@ Rich usage example:
     var node = document.getElementById('foo')
 
     animation.on('frame', function(e) {
-      node.style.left = e.values.left,
-      node.style.top = e.values.top
+      Animation.transform(node, e.values)
+      /*
+      or: 
+      node.style.left = e.values.left + 'px'
+      node.style.top = e.values.top + 'px'
+      */
     })
 
     animation.init({
@@ -64,8 +68,8 @@ Use `Animation.simple()` to create a simple animation from one value to another:
     })
 
 
-React usage example:
---------------------
+React usage example using states:
+---------------------------------
 
     var App = React.createClass({
 
@@ -101,8 +105,6 @@ React usage example:
           top: this.state.top,
           background: '#000'
         }
-
-        Animation.optimizeCSS(style)
         
         return (
           <div style={style} />
@@ -125,13 +127,14 @@ Methods:
     animation.setOptions(options)    // set new options at run-time
     animation.isAnimating()          // returns true/false if the animation is running
     animation.destroy()              // kill animation and clear memory
+    animation.getInitialValues()     // returns a non-mutated object with the initial values set in the init() method
 
 Static Methods:
 ---------------
 
     Animation.cleanUp()                  // destroys all animations and clears memory
     Animation.simple(from, to, options)  // creates a simple animation instance
-    Animation.optimizeCSS(styles)        // optimizes a style object with translate3d if supported
+    Animation.transform(node, obj)       // sets optimized inline styles to DOM nodes. Values: top, left, scale, rotate, opacity
 
 Animation implemenets the ainojs-events interface. Example:
   

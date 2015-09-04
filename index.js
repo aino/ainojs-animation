@@ -1,40 +1,9 @@
 var requestFrame = require('raf')
 var EventMixin = require('ainojs-events')
+var Detect = require('ainojs-detect')
 
 var now = function() { return +new Date() }
 var noop = function() {}
-var document = window.document
-
-// detect prefix for CSS helper
-var getPrefix = function() {
-  if ( this.prefix )
-    return this.prefix
-  if ( !document.body )
-    return null
-  var el = document.createElement('i')
-  el.style.position = 'absolute'
-  var has3d
-  var transforms = {
-    'MozTransform':'-moz-transform',
-    'transform':'transform',
-    'webkitTransform':'-webkit-transform',
-    'msTransform':'-ms-transform',
-    'OTransform':'-o-transform'
-  }
-  document.body.appendChild(el, null)
-  for (var t in transforms) {
-    if ( typeof el.style[t] != 'undefined' ) {
-      el.style[t] = 'translate3d(1px,1px,1px)'
-      has3d = window.getComputedStyle(el).getPropertyValue(transforms[t])
-      if (has3d !== undefined && has3d.length > 0 && has3d !== "none") {
-        this.prefix = t
-        break
-      }
-    }
-  }
-  document.body.removeChild(el)
-  return this.prefix || null
-}
 
 // collect animations
 var isSleeping = true
@@ -106,6 +75,7 @@ proto.setOptions = function(options) {
     this.config[i] = options[i]
   if ( options.duration && !this.isRunning )
     this.duration = options.duration
+  return this
 }
 
 proto.eachAnims = function(fn) {
@@ -117,7 +87,9 @@ proto.init = function(initialValues) {
   if ( this.intialized )
     return
   this.intialized = true
+  this.initialValues = {}
   for (var i in initialValues) {
+    this.initialValues[i] = initialValues[i]
     if ( typeof this.animations[i] != 'object' )
       this.animations[i] = { value: initialValues[i] }
   }
@@ -139,13 +111,14 @@ proto.moveTo = function(newValues) {
     }
   }
   if ( this.isRunning ) {
-    this.trigger('complete')
+    this.trigger('complete', { values: this.obj })
     this.isRunning = false
     this.duration = this.config.duration
   }
   this.trigger('frame', {
     values: this.obj
   })
+  return this
 }
 
 proto.animateTo = function(destinationValues, skipDelay) {
@@ -208,7 +181,7 @@ proto.end = function() {
   this.trigger('frame', {
     values: end
   })
-  this.trigger('complete')
+  this.trigger('complete', { values: end })
   this.isRunning = false
   this.duration = this.config.duration
   if ( this.config.yoyo ) {
@@ -223,7 +196,6 @@ proto.end = function() {
     })
     this.animateTo(end)
   }
-
   return this
 }
 
@@ -233,6 +205,11 @@ proto.destroy = function() {
     if ( this.uid === tick.uid )
       tickers.splice(i, 1)
   }.bind(this))
+  return this
+}
+
+proto.getInitialValues = function() {
+  return this.initialValues
 }
 
 // static utils
@@ -249,31 +226,43 @@ Animation.simple = function(from, to, options) {
     .on('frame', function(e) {
       options.frame && options.frame.call(this, e.values.val)
     })
-    .on('complete', function() {
-      options.complete && options.complete.apply(this, arguments)
+    .on('complete', function(e) {
+      options.complete && options.complete.call(this, e.values.val)
       this.destroy()
     })
     .animateTo({val: to})
 }
 
-// helper for creating optimized styles
-Animation.optimizeCSS = function(obj) {
+// helper for creating optimized node styles
+Animation.transform = function(node, transforms) {
 
-  var x, y
-
-  if (obj.hasOwnProperty('top'))
-    y = parseFloat(obj.top)
-
-  if (obj.hasOwnProperty('left'))
-    x = parseFloat(obj.left)
-
-  if ( typeof x != 'number' || typeof y != 'number' )
+  if ( !node )
     return
 
-  obj[getPrefix()] = 'translate3d('+x+'px,'+y+'px,0)'
-  delete obj.top
-  delete obj.left
+  var x = parseFloat(transforms.left)
+  var y = parseFloat(transforms.top)
+  var scale = parseFloat(transforms.scale)
+  var rotate = parseFloat(transforms.rotate)
+  var opacity = parseFloat(transforms.opacity)
+  var t = []
 
+  if ( !isNaN(opacity)  )
+    node.style.opacity = transforms.opacity
+  if ( Detect.transformPrefix ) {
+    if ( !isNaN(x) && !isNaN(y) )
+      t.push(Detect.translate3d ? 'translate3d('+x+'px,'+y+'px,0)' : 'translate('+x+'px,'+y+'px)')
+    if ( !isNaN(scale) )
+      t.push(Detect.translate3d ? 'scale3d('+scale+','+scale+',1)' : 'scale('+scale+','+scale+')')
+    if ( !isNaN(rotate) )
+      t.push('rotate('+rotate+'deg)')
+
+    node.style[Detect.transformPrefix] = t.join(' ')
+
+  } else if ( !isNaN(x) && !isNaN(y) ) {
+    node.style.left = x+'px'
+    node.style.top = y+'px'
+  }
 }
+
 
 module.exports = Animation

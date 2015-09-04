@@ -19,6 +19,7 @@
   "devDependencies": {},
   "dependencies": {
     "ainojs-events": "latest",
+    "ainojs-detect": "latest",
     "raf": "^2.0.4"
   }
 }
