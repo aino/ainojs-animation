@@ -240,8 +240,8 @@ Animation.transform = function(node, transforms) {
   if ( !node )
     return
 
-  var x = parseFloat(transforms.left)
-  var y = parseFloat(transforms.top)
+  var x = parseFloat(transforms.left) || 0
+  var y = parseFloat(transforms.top) || 0
   var scale = parseFloat(transforms.scale)
   var rotate = parseFloat(transforms.rotate)
   var opacity = parseFloat(transforms.opacity)
@@ -260,9 +260,9 @@ Animation.transform = function(node, transforms) {
     node.style[Detect.transformPrefix] = t.join(' ')
 
   } else {
-    if ( transforms.hasOwnProperty('left') && !isNaN(x) )
+    if ( transforms.hasOwnProperty('left') )
       node.style.left = x+'px'
-    if ( transforms.hasOwnProperty('top') && !isNaN(y) )
+    if ( transforms.hasOwnProperty('top') )
       node.style.top = y+'px'
   }
 }
