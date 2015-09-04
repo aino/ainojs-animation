@@ -233,6 +233,7 @@ Animation.simple = function(from, to, options) {
     .animateTo({val: to})
 }
 
+
 // helper for creating optimized node styles
 Animation.transform = function(node, transforms) {
 
