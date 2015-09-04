@@ -1,6 +1,7 @@
 var requestFrame = require('raf')
 var EventMixin = require('ainojs-events')
-var Detect = require('ainojs-detect')
+var transformPrefix = require('ainojs-detect').transformPrefix
+var translate3d = require('ainojs-detect').translate3d
 
 var now = function() { return +new Date() }
 var noop = function() {}
@@ -249,15 +250,15 @@ Animation.transform = function(node, transforms) {
 
   if ( !isNaN(opacity)  )
     node.style.opacity = transforms.opacity
-  if ( Detect.transformPrefix ) {
+  if ( transformPrefix ) {
     if ( !isNaN(x) && !isNaN(y) )
-      t.push(Detect.translate3d ? 'translate3d('+x+'px,'+y+'px,0)' : 'translate('+x+'px,'+y+'px)')
+      t.push(translate3d ? 'translate3d('+x+'px,'+y+'px,0)' : 'translate('+x+'px,'+y+'px)')
     if ( !isNaN(scale) )
-      t.push(Detect.translate3d ? 'scale3d('+scale+','+scale+',1)' : 'scale('+scale+','+scale+')')
+      t.push(translate3d ? 'scale3d('+scale+','+scale+',1)' : 'scale('+scale+','+scale+')')
     if ( !isNaN(rotate) )
       t.push('rotate('+rotate+'deg)')
 
-    node.style[Detect.transformPrefix] = t.join(' ')
+    node.style[transformPrefix] = t.join(' ')
 
   } else if ( !isNaN(x) && !isNaN(y) ) {
     node.style.left = x+'px'
