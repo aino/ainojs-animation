@@ -235,15 +235,24 @@ Animation.simple = function(from, to, options) {
 
 
 // helper for creating optimized node styles
-Animation.transform = function(node, transforms) {
+Animation.transform = function(node, transforms, options) {
 
   if ( !node )
     return
+
+  var settings = {
+    use3d: true
+  }
+  if ( typeof options == 'object' ) {
+    for ( var i in options )
+      settings[i] = options[i]
+  }
 
   var x = parseFloat(transforms.left) || 0
   var y = parseFloat(transforms.top) || 0
   var scale = parseFloat(transforms.scale)
   var rotate = parseFloat(transforms.rotate)
+  var rotate3d = parseFloat(transforms.rotate3d)
   var opacity = parseFloat(transforms.opacity)
   var t = []
 
@@ -251,9 +260,9 @@ Animation.transform = function(node, transforms) {
     node.style.opacity = transforms.opacity
   if ( Detect.transformPrefix ) {
     if ( x || y )
-      t.push(Detect.translate3d ? 'translate3d('+x+'px,'+y+'px,0)' : 'translate('+x+'px,'+y+'px)')
+      t.push(Detect.translate3d && settings.use3d ? 'translate3d('+x+'px,'+y+'px,0)' : 'translate('+x+'px,'+y+'px)')
     if ( !isNaN(scale) )
-      t.push(Detect.translate3d ? 'scale3d('+scale+','+scale+',1)' : 'scale('+scale+','+scale+')')
+      t.push(Detect.translate3d && settings.use3d ? 'scale3d('+scale+','+scale+',1)' : 'scale('+scale+','+scale+')')
     if ( !isNaN(rotate) )
       t.push('rotate('+rotate+'deg)')
 
